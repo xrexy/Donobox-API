@@ -11,7 +11,7 @@ import { User } from './models/user';
 export class UsersService {
   private users: User[] = [
     {
-      email: 'rexy@gmail.com',
+      email: 'rexyy@gmail.com',
       password: 'uwu',
       userId: '123',
       age: 20,
@@ -30,7 +30,9 @@ export class UsersService {
   }
 
   public updateUser(updateUserData: UpdateUserInput): User {
-    const user = this.users.find(user => user.userId === updateUserData.userId);
+    const user = this.users.find(
+      (user) => user.userId === updateUserData.userId,
+    );
 
     Object.assign(user, updateUserData);
 
@@ -38,20 +40,20 @@ export class UsersService {
   }
 
   public getUser(getUserArgs: GetUserArgs): User {
-    return this.users.find(user => user.userId === getUserArgs.userId);
+    return this.users.find((user) => user.userId === getUserArgs.userId);
   }
 
   public getUserByEmail(email: string): User | undefined {
-    return this.users.find(user => user.email === email);
+    return this.users.find((user) => user.email === email);
   }
 
   public getUsers(getUsersArgs: GetUsersArgs): User[] {
-    return getUsersArgs.userIds.map(userId => this.getUser({ userId }));
+    return getUsersArgs.userIds.map((userId) => this.getUser({ userId }));
   }
 
   public deleteUser(deleteUserData: DeleteUserInput): User {
     const userIndex = this.users.findIndex(
-      user => user.userId === deleteUserData.userId,
+      (user) => user.userId === deleteUserData.userId,
     );
 
     const user = this.users[userIndex];

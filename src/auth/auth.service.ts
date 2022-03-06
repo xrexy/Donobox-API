@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/models/user';
 
 import { UsersService } from '../users/users.service';
+import { jwtSecret } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -34,8 +35,10 @@ export class AuthService {
   }
 
   verify(token: string): User {
+    console.log(process.env.JWT_SECRET_KEY);
+    console.log(token);
     const decoded = this.jwtService.verify(token, {
-      secret: process.env.JWT_SECRET,
+      secret: jwtSecret,
     });
 
     const user = this.usersService.getUserByEmail(decoded.email);
