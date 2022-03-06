@@ -1,24 +1,21 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 
 @ObjectType()
-// @Schema()
+@Schema()
 export class User {
   @Field()
   userId: string;
 
   @Field()
-  // @Prop()
+  @Prop({ unique: true })
   email: string;
 
-  @Field(() => Int)
-  // @Prop()
-  age: number;
-  
   @Field({ nullable: true })
-  // @Prop()
-  isSubscribed?: boolean;
-  
-  @Field({ nullable: true })
-  // @Prop()
+  @Prop()
   password?: string;
 }
+
+export type UserDocument = User & Document;
+
+export const UserSchema = SchemaFactory.createForClass(User);

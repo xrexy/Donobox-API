@@ -1,5 +1,14 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
+import { CreateUserInput } from 'src/users/dto/input/create-user.input';
 
 import { User } from '../users/models/user';
 import { AuthService } from './auth.service';
@@ -13,5 +22,10 @@ export class AuthController {
   @Post('login')
   login(@Req() req: Request): { access_token: string } {
     return this.authService.login((req as any).user as User);
+  }
+
+  @Post('register')
+  public async register(@Body() createUserDto: CreateUserInput) {
+    return this.authService.register(createUserDto);
   }
 }

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../users/models/user';
+import { CreateUserInput } from 'src/users/dto/input/create-user.input';
 
+import { User } from '../users/models/user';
 import { UsersService } from '../users/users.service';
 import { jwtSecret } from './constants';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
@@ -12,15 +13,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  validate(email: string, password: string): User | null {
-    const user = this.usersService.getUserByEmail(email);
+  async validate(email: string, password: string): Promise<User | null> {
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) return;
 
-    if (!user) {
-      return null;
-    }
-
-    const passwordIsValid = password === user.password;
-    return passwordIsValid ? user : null;
+    return (await bcrypt.compare(password, user.password)) ? user : null;
   }
 
   login(user: User): { access_token: string } {
@@ -34,14 +31,26 @@ export class AuthService {
     };
   }
 
-  verify(token: string): User {
-    console.log(process.env.JWT_SECRET_KEY);
-    console.log(token);
+  async register(details: CreateUserInput) {
+    try {
+      if (await this.usersService.getUserByEmail(details.email))
+        throw new HttpException(
+          `User already registered`,
+          HttpStatus.BAD_REQUEST,
+        );
+
+      return this.login(await this.usersService.createUser(details));
+    } catch (err) {
+      throw new HttpException(`${err.message}`, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async verify(token: string): Promise<User> {
     const decoded = this.jwtService.verify(token, {
       secret: jwtSecret,
     });
 
-    const user = this.usersService.getUserByEmail(decoded.email);
+    const user = await this.usersService.getUserByEmail(decoded.email);
 
     if (!user) {
       throw new Error('Unable to get the user from decoded token.');

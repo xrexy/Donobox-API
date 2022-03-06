@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
+import { Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
+
 import { GetUserArgs } from './dto/args/get-user.args';
 import { GetUsersArgs } from './dto/args/get-users.args';
 import { CreateUserInput } from './dto/input/create-user.input';
@@ -9,57 +13,49 @@ import { User } from './models/user';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [
-    {
-      email: 'rexyy@gmail.com',
-      password: 'uwu',
-      userId: '123',
-      age: 20,
-    },
-  ];
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  public createUser(createUserData: CreateUserInput): User {
+  hashPassword = (password: string, callback: (enc: string) => string) => {
+    bcrypt.hash(password, 10, (err, enc) => callback(enc));
+  };
+
+  public async createUser(createUserData: CreateUserInput): Promise<User> {
     const user: User = {
-      userId: uuidv4(),
       ...createUserData,
+      userId: uuidv4(),
+      password: await bcrypt.hash(createUserData.password, 10),
     };
-
-    this.users.push(user);
-
-    return user;
+    return this.userModel.create(user);
   }
 
-  public updateUser(updateUserData: UpdateUserInput): User {
-    const user = this.users.find(
-      (user) => user.userId === updateUserData.userId,
-    );
+  public async updateUser(updateUserData: UpdateUserInput): Promise<User> {
+    const user = await this.userModel.findOne({
+      userId: updateUserData.userId,
+    });
 
-    Object.assign(user, updateUserData);
+    const updated = Object.assign(user, updateUserData);
+    await this.userModel.updateOne({ userId: updateUserData.userId }, updated);
 
-    return user;
+    return updated;
   }
 
-  public getUser(getUserArgs: GetUserArgs): User {
-    return this.users.find((user) => user.userId === getUserArgs.userId);
+  public async getUser(getUserArgs: GetUserArgs): Promise<User> {
+    return await this.userModel.findOne({ userId: getUserArgs.userId });
   }
 
-  public getUserByEmail(email: string): User | undefined {
-    return this.users.find((user) => user.email === email);
+  public async getUserByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({ email });
   }
 
-  public getUsers(getUsersArgs: GetUsersArgs): User[] {
-    return getUsersArgs.userIds.map((userId) => this.getUser({ userId }));
+  public async getUsers(getUsersArgs: GetUsersArgs): Promise<User[]> {
+    return await this.userModel.find({
+      userId: {
+        $in: getUsersArgs,
+      },
+    });
   }
 
-  public deleteUser(deleteUserData: DeleteUserInput): User {
-    const userIndex = this.users.findIndex(
-      (user) => user.userId === deleteUserData.userId,
-    );
-
-    const user = this.users[userIndex];
-
-    this.users.splice(userIndex);
-
-    return user;
+  public async deleteUser(deleteUserData: DeleteUserInput): Promise<User> {
+    return await this.userModel.findOneAndDelete({ ...deleteUserData });
   }
 }

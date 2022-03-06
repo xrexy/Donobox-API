@@ -17,27 +17,27 @@ export class UsersResolver {
 
   @Query(() => User, { name: 'user', nullable: true })
   @UseGuards(GqlAuthGuard)
-  getUser(@CurrentUser() user: User, @Args() getUserArgs: GetUserArgs): User {
+  async getUser(@CurrentUser() user: User, @Args() getUserArgs: GetUserArgs) {
     return this.usersService.getUser(getUserArgs);
   }
 
   @Query(() => [User], { name: 'users', nullable: 'items' })
-  getUsers(@Args() getUsersArgs: GetUsersArgs): User[] {
+  async getUsers(@Args() getUsersArgs: GetUsersArgs) {
     return this.usersService.getUsers(getUsersArgs);
   }
 
   @Mutation(() => User)
-  createUser(@Args('createUserData') createUserData: CreateUserInput): User {
+  async createUser(@Args('createUserData') createUserData: CreateUserInput) {
     return this.usersService.createUser(createUserData);
   }
 
   @Mutation(() => User)
-  updateUser(@Args('updateUserData') updateUserData: UpdateUserInput): User {
+  async updateUser(@Args('updateUserData') updateUserData: UpdateUserInput) {
     return this.usersService.updateUser(updateUserData);
   }
 
   @Mutation(() => User)
-  deleteUser(@Args('deleteUserData') deleteUserData: DeleteUserInput): User {
+  async deleteUser(@Args('deleteUserData') deleteUserData: DeleteUserInput) {
     return this.usersService.deleteUser(deleteUserData);
   }
 }

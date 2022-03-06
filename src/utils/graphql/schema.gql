@@ -3,8 +3,8 @@
 # ------------------------------------------------------
 
 input CreateUserInput {
-  age: Float!
   email: String!
+  password: String!
 }
 
 input DeleteUserInput {
@@ -23,15 +23,11 @@ type Query {
 }
 
 input UpdateUserInput {
-  age: Float!
-  isSubscribed: Boolean
   userId: String!
 }
 
 type User {
-  age: Int!
   email: String!
-  isSubscribed: Boolean
   password: String
   userId: String!
 }
