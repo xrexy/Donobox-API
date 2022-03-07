@@ -9,7 +9,7 @@ import { GetUsersArgs } from './dto/args/get-users.args';
 import { CreateUserInput } from './dto/input/create-user.input';
 import { DeleteUserInput } from './dto/input/delete-user.input';
 import { UpdateUserInput } from './dto/input/update-user.input';
-import { User } from './models/user';
+import { User } from '../utils/graphql/models/user.model';
 
 @Injectable()
 export class UsersService {
@@ -40,17 +40,17 @@ export class UsersService {
   }
 
   public async getUser(getUserArgs: GetUserArgs): Promise<User> {
-    return await this.userModel.findOne({ userId: getUserArgs.userId });
+    return this.userModel.findOne({ userId: getUserArgs.userId });
   }
 
   public async getUserByEmail(email: string): Promise<User> {
-    return await this.userModel.findOne({ email });
+    return this.userModel.findOne({ email });
   }
 
   public async getUsers(getUsersArgs: GetUsersArgs): Promise<User[]> {
-    return await this.userModel.find({
+    return this.userModel.find({
       userId: {
-        $in: getUsersArgs,
+        $in: getUsersArgs.userIds,
       },
     });
   }

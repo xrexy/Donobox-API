@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserInput } from 'src/users/dto/input/create-user.input';
 
-import { User } from '../users/models/user';
+import { User } from '../utils/graphql/models/user.model';
 import { UsersService } from '../users/users.service';
 import { jwtSecret } from './constants';
 import * as bcrypt from 'bcrypt';

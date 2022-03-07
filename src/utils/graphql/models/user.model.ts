@@ -1,10 +1,11 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-@ObjectType()
 @Schema()
+@ObjectType()
 export class User {
   @Field()
+  @Prop({ unique: true })
   userId: string;
 
   @Field()
@@ -15,7 +16,5 @@ export class User {
   @Prop()
   password?: string;
 }
-
-export type UserDocument = User & Document;
 
 export const UserSchema = SchemaFactory.createForClass(User);

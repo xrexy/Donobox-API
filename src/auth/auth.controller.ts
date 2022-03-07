@@ -10,7 +10,7 @@ import {
 import { Request } from 'express';
 import { CreateUserInput } from 'src/users/dto/input/create-user.input';
 
-import { User } from '../users/models/user';
+import { User } from '../utils/graphql/models/user.model';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
