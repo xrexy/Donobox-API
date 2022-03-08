@@ -24,6 +24,7 @@ export class UsersService {
       ...createUserData,
       userId: uuidv4(),
       password: await bcrypt.hash(createUserData.password, 10),
+      tokens: 0.0,
     };
     return this.userModel.create(user);
   }

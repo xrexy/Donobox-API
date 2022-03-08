@@ -6,4 +6,7 @@ export class UpdateUserInput {
   @Field()
   @IsNotEmpty()
   userId: string;
+
+  @Field()
+  tokens: number;
 }

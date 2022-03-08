@@ -15,6 +15,10 @@ export class User {
   @Field({ nullable: true })
   @Prop()
   password?: string;
+
+  @Field({ defaultValue: 0.0 })
+  @Prop()
+  tokens: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
